@@ -97,19 +97,26 @@ This project employs Bayesian logistic regression, using the No-U-Turn sampler i
 
 ## Model Specification
 
+
+
+
+
+
+## Logistic Regression Model
+
 The logistic regression model is defined as:
 
-\[ P\left(Y_i=1 \mid X_i, \beta, \beta_0\right)=\frac{1}{1+\exp \left(-\left(\beta_0+X_i^T \beta\right)\right)} \]
+P(Y_i = 1 | X_i, β, β_0) = 1 / (1 + exp(-(β_0 + X_i^T β)))
 
 ### Spike-and-Slab Prior
 
-The prior for each coefficient \(\beta_i\) is a mixture Gaussian distribution:
+The prior for each coefficient β_i is a mixture Gaussian distribution:
 
-\[ \beta_i \sim \pi \cdot \mathcal{N}\left(0, \sigma_{\text{slab}}^2\right)+(1-\pi) \cdot \mathcal{N}\left(0, \sigma_{\text{spike}}^2\right) \]
+β_i ∼ π * N(0, σ_slab^2) + (1 - π) * N(0, σ_spike^2)
 
 where:
-- \(\pi\) is the probability that the coefficient \(\beta_i\) comes from the slab distribution.
-- \(\sigma_{\text{slab}}^2\) and \(\sigma_{\text{spike}}^2\) are variances for the slab and spike distributions, respectively.
+- π is the probability that the coefficient β_i comes from the slab distribution.
+- σ_slab^2 and σ_spike^2 are variances for the slab and spike distributions, respectively.
 
 ### Posterior Distribution
 
@@ -129,38 +136,6 @@ We utilized the RStan package, implementing the No-U-Turn sampler (NUTS), a vari
 
 *Fig. 3: Parameter Estimation Plot including Log Posterior.*
 
-
-Here is a concise `README.md` file with the images included:
-
----
-
-# Bayesian Logistic Regression for Lung Cancer Prediction
-
-This project applies Bayesian logistic regression using Markov Chain Monte Carlo (MCMC) methods to predict lung cancer, emphasizing the importance of variable selection and uncertainty estimation. The model leverages a dataset of 309 observations with 16 covariates such as smoking, anxiety, and yellow fingers to assess the predictive power of logistic regression in small sample sizes.
-
-## Methodology
-
-The logistic regression model is built using the Bayesian framework, incorporating a Spike-and-Slab prior for variable selection. The posterior distribution is sampled using the No-U-Turn sampler from Hamiltonian Monte Carlo (HMC) methods in RStan.
-
-### Model Specification
-
-The logistic regression model is defined as:
-
-$$
-P\left(Y_i=1 \mid X_i, \beta, \beta_0\right) = \frac{1}{1+\exp \left(-\left(\beta_0+X_i^T \beta\right)\right)}
-$$
-
-The Spike-and-Slab prior used for variable selection is:
-
-$$
-\beta_i \sim \pi \cdot \mathcal{N}\left(0, \sigma_{\text {slab }}^2\right) + (1-\pi) \cdot \mathcal{N}\left(0, \sigma_{\text {spike }}^2\right)
-$$
-
-### Parameter Estimation
-
-The model parameters are estimated using the No-U-Turn sampler in Hamiltonian Monte Carlo. The summary statistics of the model parameters are provided in the table below:
-
-![Summary Statistics of Model Parameters](./model_parameters_summary.png)
 
 ### Trace and Diagnostic Plots
 
