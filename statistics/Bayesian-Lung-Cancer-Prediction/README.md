@@ -44,13 +44,6 @@ While conventional risk factors like smoking exhibit weaker correlations, sympto
 
 
 
-## Results
-
-The Bayesian logistic regression model provided robust predictions with improved handling of small sample sizes, offering insights into the strength and uncertainty of associations between various risk factors and lung cancer occurrence.
-
-
-
-
 
 
 ## Model Specification
@@ -86,44 +79,6 @@ $$
 
 Given the complexity, we utilize MCMC methods to approximate the posterior distribution, enabling efficient variable selection and prediction in high-dimensional datasets.
 
-
-Here's how you can structure your `README.md` file with the provided content, including the images:
-
----
-
-# Bayesian Logistic Regression for Lung Cancer Prediction
-
-This project employs Bayesian logistic regression, using the No-U-Turn sampler in the Hamiltonian Monte Carlo method (HMC) for estimating lung cancer risk based on various risk factors. The model is designed to handle small sample sizes and incorporates the Spike-and-Slab prior for variable selection.
-
-## Model Specification
-
-
-
-
-
-
-## Logistic Regression Model
-
-The logistic regression model is defined as:
-
-P(Y_i = 1 | X_i, β, β_0) = 1 / (1 + exp(-(β_0 + X_i^T β)))
-
-### Spike-and-Slab Prior
-
-The prior for each coefficient β_i is a mixture Gaussian distribution:
-
-β_i ∼ π * N(0, σ_slab^2) + (1 - π) * N(0, σ_spike^2)
-
-where:
-- π is the probability that the coefficient β_i comes from the slab distribution.
-- σ_slab^2 and σ_spike^2 are variances for the slab and spike distributions, respectively.
-
-### Posterior Distribution
-
-The posterior distribution \(p(\beta, \beta_0 \mid Y, X)\) is given by:
-
-\[ p\left(\beta, \beta_0 \mid Y, X\right) \propto p\left(Y \mid X, \beta, \beta_0\right) \times p\left(\beta, \beta_0\right) \]
-
 ### Parameter Estimation
 
 We utilized the RStan package, implementing the No-U-Turn sampler (NUTS), a variant of HMC, to run the simulations with specified priors. The method effectively explores the parameter space and increases the effective sample size compared to traditional Gibbs sampling or Metropolis-Hastings algorithms.
@@ -152,12 +107,11 @@ We utilized the RStan package, implementing the No-U-Turn sampler (NUTS), a vari
   ![R-hat and ESS Values](./diagnostic_values.png)
 
 
-
-# Lung Cancer Prediction: Model Comparison
+## Model Comparison
 
 This project compares a Bayesian logistic regression model using MCMC with a traditional frequentist logistic regression model for predicting lung cancer.
 
-## Model Specifications
+### Model Specifications
 
 - **Frequentist Model:**
   - Defined by:
@@ -166,7 +120,7 @@ This project compares a Bayesian logistic regression model using MCMC with a tra
     $$
   - Estimated using Maximum Likelihood Estimation (MLE).
 
-## Results
+### Results
 
 The scatter plots below illustrate the classification results for both models:
 
@@ -191,8 +145,6 @@ We compared our Bayesian logistic regression model, implemented using MCMC metho
 
 #### Our Model (Bayesian Logistic Regression)
 
-![Confusion Matrix - Bayesian Logistic Regression](confusion_matrix_bayesian.png)
-
 | Metric                     | Value       |
 |----------------------------|-------------|
 | **Accuracy**               | 0.8675      |
@@ -206,7 +158,6 @@ We compared our Bayesian logistic regression model, implemented using MCMC metho
 
 #### GLM Logistic Regression Model
 
-![Confusion Matrix - GLM Logistic Regression](confusion_matrix_glm.png)
 
 | Metric                     | Value       |
 |----------------------------|-------------|
@@ -225,8 +176,6 @@ We compared our Bayesian logistic regression model, implemented using MCMC metho
 - **Sensitivity and Specificity**: While both models show high sensitivity and specificity, the Bayesian model shows a balance with slightly higher sensitivity.
 
 These metrics suggest that the Bayesian logistic regression model, leveraging MCMC methods, offers better predictive performance and generalization over the traditional GLM logistic regression model in this dataset.
-
-
 
 
 
