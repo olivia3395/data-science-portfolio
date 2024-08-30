@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bayesian Lung Cancer Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            color: #333;
+        }
+        h1, h2, h3 {
+            color: #0056b3;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        h2 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+        p {
+            margin: 10px 0;
+        }
+        ul {
+            margin: 20px 0;
+            padding-left: 20px;
+        }
+        li {
+            margin: 10px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+            color: #0056b3;
+        }
+        .image {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .image img {
+            width: 80%;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .caption {
+            font-style: italic;
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Bayesian Lung Cancer Prediction</h1>
+
+    <h2>Overview</h2>
+    <p>This project aims to predict lung cancer using Bayesian logistic regression with Markov Chain Monte Carlo (MCMC) methods. We analyze a dataset of 309 observations and 16 covariates, including risk factors like smoking, yellow fingers, and anxiety. Given the small sample size, Bayesian methods are employed to improve prediction accuracy and provide a robust alternative to traditional logistic regression.</p>
+
+    <h2>Methodology</h2>
+    <ul>
+        <li><strong>Bayesian Framework:</strong> Incorporates prior knowledge and provides a distribution of coefficient estimates rather than single-point estimates.</li>
+        <li><strong>MCMC Techniques:</strong> Utilizes the No-U-Turn sampler in RStan to approximate the posterior distribution of logistic regression coefficients.</li>
+        <li><strong>Model Comparison:</strong> Evaluates the performance of Bayesian logistic regression against standard logistic regression and generalized linear regression with Lasso.</li>
+    </ul>
+
+    <h2>Class Imbalance in Lung Cancer Data</h2>
+    <p>Class imbalance is a common issue in medical datasets. In this project, we employed oversampling to balance the dataset by adjusting both classes to have 200 instances each.</p>
+    
+    <div class="image">
+        <img src="balanced_lung_cancer_data.png" alt="Comparison of data before and after resampling">
+        <div class="caption">Figure 1: Comparison of data before and after resampling.</div>
+    </div>
+
+    <h2>Correlation Analysis</h2>
+    <p>Our correlation analysis revealed key associations with lung cancer:</p>
+    <ul>
+        <li><strong>Strong Correlations:</strong> Allergies (0.328), alcohol consumption (0.289), swallowing difficulty (0.260), and wheezing (0.249).</li>
+        <li><strong>Moderate Correlations:</strong> Yellow fingers, peer pressure, and chest pain.</li>
+        <li><strong>Weak Correlations:</strong> Traditional risk factors such as smoking and age.</li>
+    </ul>
+    
+    <div class="image">
+        <img src="correlation_analysis.png" alt="Correlation Analysis">
+        <div class="caption">Figure 2: Correlation Analysis.</div>
+    </div>
+
+    <h2>Model Specification</h2>
+
+    <h3>Model Construction</h3>
+    <p>Our model predicts the probability of lung cancer given various risk factors, defined as:</p>
+    <pre>P(Y_i=1 | X_i, β, β_0) = 1 / [1 + exp(- (β_0 + X_i^T β))]</pre>
+
+    <h3>Spike-and-Slab Prior</h3>
+    <p>For effective variable selection, we employ a Spike-and-Slab prior:</p>
+    <pre>β_i ∼ π ⋅ N(0, σ_slab²) + (1-π) ⋅ N(0, σ_spike²)</pre>
+    
+    <h3>Parameter Estimation</h3>
+    <p>We utilized the RStan package, implementing the No-U-Turn sampler (NUTS), a variant of HMC, to run the simulations with specified priors.</p>
+    
+    <div class="image">
+        <img src="summary_statistics_model_parameters.png" alt="Summary Statistics of Model Parameters">
+        <div class="caption">Table 1: Summary statistics of model parameters.</div>
+    </div>
+
+    <div class="image">
+        <img src="parameter_estimation_plot.png" alt="Parameter Estimation Plot">
+        <div class="caption">Figure 3: Parameter Estimation Plot including Log Posterior.</div>
+    </div>
+
+    <h3>Trace and Diagnostic Plots</h3>
+
+    <div class="image">
+        <img src="trace_plot.png" alt="Trace Plot">
+        <div class="caption">Figure 4: Trace Plot including Log Posterior.</div>
+    </div>
+
+    <div class="image">
+        <img src="autocorrelation_plot.png" alt="Autocorrelation Plot">
+        <div class="caption">Figure 5: Autocorrelation Plot.</div>
+    </div>
+
+    <div class="image">
+        <img src="diagnostic_values.png" alt="R-hat and ESS Values">
+        <div class="caption">Figure 6: Diagnostic Values for the MCMC Models.</div>
+    </div>
+
+    <h2>Model Comparison</h2>
+
+    <h3>Model Specifications</h3>
+    <p><strong>Frequentist Model:</strong> Defined by:</p>
+    <pre>logit(P(Y=1 | X)) = β₀ + β₁x₁ + β₂x₂ + ... + βₙxₙ</pre>
+    <p>Estimated using Maximum Likelihood Estimation (MLE).</p>
+
+    <h3>Results</h3>
+    <p>The scatter plots below illustrate the classification results for both models:</p>
+    
+    <div class="image">
+        <img src="model_results.png" alt="Model Results">
+        <div class="caption">Figure 7: Classification Result Comparison.</div>
+    </div>
+
+    <h2>Model Performance Comparison</h2>
+    <p>We compared our Bayesian logistic regression model, implemented using MCMC methods, with a traditional GLM logistic regression model. Below are the confusion matrices and key statistics for each model.</p>
+
+    <h3>Confusion Matrix and Performance Metrics</h3>
+    
+    <div class="image">
+        <img src="model_metrics_comparison.png" alt="Model Metrics Comparison">
+        <div class="caption">Figure 8: Visual comparison of model performance metrics.</div>
+    </div>
+
+    <h2>References</h2>
+    <p>Andrew Gelman’s guidelines on MCMC iterations and Bayesian analysis techniques were followed in this study.</p>
+
+    <h2>License</h2>
+    <p>This project is licensed under the MIT License.</p>
+</body>
+</html>
