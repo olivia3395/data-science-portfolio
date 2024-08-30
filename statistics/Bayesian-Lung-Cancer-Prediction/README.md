@@ -24,11 +24,7 @@ In this project, we employed oversampling to balance the dataset by adjusting bo
 ### Visual Representation
 
 ![Comparison of data before and after resampling](./balanced_lung_cancer_data.png)
-
-- **Figure 1:** Comparison of data before and after resampling.  
-  - **(a)** Data before processing
-  - **(b)** Data after resampling
-
+ 
 
 ### Correlation Analysis
 
@@ -85,11 +81,9 @@ We utilized the RStan package, implementing the No-U-Turn sampler (NUTS), a vari
 
 ![Summary Statistics of Model Parameters](./summary_statistics_model_parameters.png)
 
-*Table 1: Summary statistics of model parameters.*
-
 ![Parameter Estimation Plot](./parameter_estimation_plot.png)
 
-*Fig. 3: Parameter Estimation Plot including Log Posterior.*
+
 
 
 ### Trace and Diagnostic Plots
