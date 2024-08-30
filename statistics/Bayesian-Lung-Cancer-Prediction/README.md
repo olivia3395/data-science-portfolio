@@ -114,11 +114,13 @@ This project compares a Bayesian logistic regression model using MCMC with a tra
 ### Model Specifications
 
 - **Frequentist Model:**
-  - Defined by:
-    $$
-    \operatorname{logit}(P(Y=1 \mid X))=\beta_0+\beta_1 x_1+\beta_2 x_2+\ldots+\beta_n x_n
-    $$
-  - Estimated using Maximum Likelihood Estimation (MLE).
+
+- Defined by:
+
+    logit(P(Y=1 | X)) = β₀ + β₁x₁ + β₂x₂ + ... + βₙxₙ
+
+- Estimated using Maximum Likelihood Estimation (MLE).
+
 
 ### Results
 
