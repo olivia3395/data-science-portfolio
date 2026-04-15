@@ -1,0 +1,72 @@
+project:
+  name: causal_promotion_optimization
+  artifact_dir: artifacts
+  random_seed: 42
+
+data:
+  source: rossmann
+  raw_dir: artifacts/raw
+  processed_dir: artifacts/processed
+  featured_path: artifacts/processed/featured_store_day.parquet
+  competition: rossmann-store-sales
+  dataset_fallback: shahpranshu27/rossman-store-sales
+  train_file: train.csv
+  store_file: store.csv
+  sample_n_rows: null
+  min_date: null
+  max_date: null
+  holdout_days: 42
+  policy_window_days: 42
+
+features:
+  treatment_col: Promo
+  outcome_col: Sales
+  id_col: Store
+  date_col: Date
+  static_categoricals: [StoreType, Assortment, StateHoliday]
+  known_future: [Promo, Promo2, SchoolHoliday, StateHoliday, month, weekofyear, dayofweek, is_month_start, is_month_end]
+  lag_days: [7, 14, 28]
+  rolling_windows: [7, 14, 28]
+  clip_negative_sales: true
+  log1p_target: false
+  drop_closed_days: true
+  top_k_feature_export: 30
+
+causal:
+  method: dr_learner
+  min_propensity: 0.03
+  max_propensity: 0.97
+  train_fraction: 0.8
+  use_econml_if_available: true
+  nuisance_model:
+    n_estimators: 300
+    learning_rate: 0.05
+    num_leaves: 31
+    subsample: 0.8
+    colsample_bytree: 0.8
+  cate_model:
+    n_estimators: 300
+    learning_rate: 0.05
+    num_leaves: 31
+    subsample: 0.8
+    colsample_bytree: 0.8
+  dowhy:
+    enabled: true
+    sample_n: 12000
+    placebo_simulations: 30
+    random_common_cause_simulations: 30
+
+optimization:
+  budget: 250000.0
+  assumed_discount_rate: 0.08
+  assumed_margin_rate: 0.28
+  max_actions: 200
+  min_roi: 0.0
+  solver: ortools
+
+serving:
+  host: 0.0.0.0
+  port: 8000
+
+dashboard:
+  title: Causal Promotion Optimization Dashboard
