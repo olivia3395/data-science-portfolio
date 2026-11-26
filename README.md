@@ -17,6 +17,12 @@ My applied data science projects: causal inference, forecasting, machine learnin
 |---|---|
 | [Retail-Demand-Forecasting](forecasting/Retail-Demand-Forecasting/) | M5 store-SKU demand forecasting: seasonal naive, LightGBM and a Temporal Fusion Transformer. |
 
+## Statistics
+
+| Project | Description |
+|---|---|
+| [Bayesian-Lung-Cancer-Prediction](statistics/Bayesian-Lung-Cancer-Prediction/) | Bayesian logistic regression with spike-and-slab variable selection, fit by MCMC in RStan. |
+
 ## Machine learning
 
 | Project | Description |
