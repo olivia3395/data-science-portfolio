@@ -1,0 +1,273 @@
+---
+title: "MA589 Final Project"
+author: "Yuyao Wang..."
+date: "4/17/2024"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+
+
+library(readr)
+data <- read_csv("~/Desktop/survey lung cancer.csv")
+
+str(data)
+
+
+
+
+```
+
+
+```{r}
+# get the central tendency and dispersion of our data,
+summary(data)
+```
+
+
+```{r}
+# plot the  distribution of responses related to lung cancer presence).
+barplot(table(data$LUNG_CANCER), main="Lung Cancer Distribution", col=c("orange", "red"))
+```
+
+```{r}
+# Check for Missing Data
+sum(is.na(data))
+
+```
+
+
+```{r}
+# for dummy variables
+data$GENDER <- as.integer(data$GENDER == 'M')  # This will assign 1 to 'M' and 0 to 'F'
+data$LUNG_CANCER <- as.integer(data$LUNG_CANCER == 'YES')  # This will assign 1 to 'YES' and 0 to 'NO'
+```
+
+
+Data Visualization
+
+```{r}
+hist(data$AGE, main="Age Distribution", xlab="Age", col="pink")
+```
+
+
+```{r}
+# visualizing the range and median of data grouped by smoking status vs age
+
+boxplot(data$AGE ~ data$SMOKING, main="Age vs Smoking", xlab="Smoking", ylab="Age", col=c("red","green"))
+```
+
+
+ 
+```{r}
+# Bar Plot for Gender vs Lung Cancer Status
+freq_table <- table(data$GENDER, data$LUNG_CANCER)
+
+barplot(freq_table, beside=TRUE, main="Gender vs Lung Cancer", col=c("pink", "red"), 
+        legend.text=TRUE, args.legend=list(title="Lung Cancer", x="topright"), 
+        xlab="Gender", ylab="Count")
+
+
+```
+```{r}
+# Assuming all relevant variables are numeric
+
+corr_matrix <- cor(data[, sapply(data, is.numeric)])
+heatmap(corr_matrix, main="Correlation Matrix Heatmap", Colv=NA, Rowv=NA, scale="none", 
+        col=colorRampPalette(c("blue", "white", "red"))(200))
+```
+
+
+
+
+
+```{r}
+# a more aesthetically pleasing heatmap
+library(ggplot2)
+library(reshape2)
+
+# Melt the correlation matrix
+melted_corr_matrix <- melt(corr_matrix)
+
+# Plot using ggplot2
+ggplot(melted_corr_matrix, aes(Var1, Var2, fill=value)) +
+    geom_tile() +
+    scale_fill_gradient2(low="blue", high="red", mid="white", midpoint=0, limit=c(-1,1)) +
+    theme_minimal() +
+    labs(title="Correlation Matrix Heatmap", x="", y="") +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+```
+```{r}
+# Convert GENDER to a factor if it isn't already
+data$GENDER <- as.factor(data$GENDER)
+
+# Calculate the mean of LUNG_CANCER for each GENDER
+gender_means <- tapply(data$LUNG_CANCER, data$GENDER, mean)
+
+# Create the bar plot with these means
+barplot(gender_means, main="Mean Lung Cancer Rate by Gender", 
+        xlab="Gender", ylab="Mean Rate of Lung Cancer", col=c("lightblue", "salmon"),
+        names.arg=c('Female', 'Male'))
+
+
+```
+
+
+
+
+
+```{r}
+# Calculate the mean of LUNG_CANCER for each SMOKING status
+smoking_means <- tapply(data$LUNG_CANCER, data$SMOKING, mean)
+
+# Define colors for each smoking status, adjust the colors as per your preference
+colors <- c("lightblue", "orange")
+
+# Create the bar plot with these means and apply the different colors
+barplot(smoking_means, main="Mean Lung Cancer Rate by Smoking Status", 
+        xlab="Smoking Status", ylab="Mean Rate of Lung Cancer", col=colors)
+
+# If you need to add a legend for the colors
+legend("topright", legend=names(smoking_means), fill=colors)
+
+```
+
+
+```{r}
+
+# Load the library
+library(caret)
+
+# Assuming 'df' is your dataframe
+# Prepare the data
+X <- data[, !(names(data) %in% 'LUNG_CANCER')]  # Drop the 'LUNG_CANCER' column
+y <- data$LUNG_CANCER  # Target variable
+
+# Split the data into training and testing sets
+set.seed(10)  # Set seed for reproducibility
+trainIndex <- createDataPartition(y, p = 0.8, list = FALSE)  # 80% for training
+X_train <- X[trainIndex, ]
+X_test <- X[-trainIndex, ]
+y_train <- y[trainIndex]
+y_test <- y[-trainIndex]
+
+
+
+```
+
+
+```{r}
+# Print the dimensions of the training and testing datasets
+print(dim(X_train))
+print(dim(X_test))
+print(length(y_train))
+print(length(y_test))
+
+```
+
+
+# LOGISTIC MODEL:
+
+Formula:
+The logistic regression model predicts the probability that a given input point belongs to the category marked as "1" (as opposed to "0"). The formula for logistic regression is based on the logistic function, which is defined as:
+$$
+P(Y=1 \mid X)=\frac{1}{1+e^{-z}}
+$$
+
+Here:
+- $P(Y=1 \mid X)$ is the probability that the dependent variable $Y$ is 1 given the predictors $X$.
+- $e$ is the base of natural logarithm.
+- $z$ is a linear combination of the predictor variables, expressed as:
+$$
+z=\beta_0+\beta_1 X_1+\beta_2 X_2+\cdots+\beta_n X_n
+$$
+
+
+Components:
+- $\beta_0, \beta_1, \ldots, \beta_n$ are the coefficients of the model. $\beta_0$ is the intercept, and $\beta_1, \ldots, \beta_n$ are the coefficients of the predictor variables $X_1, X_2, \ldots, X_n$.
+- $X_1, X_2, \ldots, X_n$ are the predictor variables.
+
+
+
+Decision Rule:
+- To make a prediction, logistic regression uses a decision rule. If $P(Y=1 \mid X)$ is greater than a certain threshold (commonly 0.5 ), the outcome is classified as 1 ; otherwise, it is classified as 0.
+
+
+
+
+Estimating Parameters:
+- The parameters $\beta$ of the model are usually estimated using maximum likelihood estimation (MLE). This method seeks to maximize the likelihood function, which measures how probable it is to observe the given set of data, under the model parameters.
+
+Advantages:
+- Logistic regression is simple and computationally efficient.
+- It provides probabilities for outcomes, which can be useful for understanding the confidence of predictions.
+- It can be regularized to avoid overfitting.
+
+Limitations:
+- Assumes linear relationship between the log odds of the dependent and independent variables.
+- Not suitable for more complex relationships or non-linear data patterns without transformation or additional techniques.
+
+
+
+```{r}
+library(ROCR)
+
+```
+
+```{r}
+model1 <- glm(y_train ~ ., data = X_train, family = binomial)
+y_pred1 <- predict(model1, newdata = X_test, type = "response")
+
+# Create a prediction object
+pred <- prediction(y_pred1, y_test)
+
+
+```
+
+```{r}
+# Calculate performance for ROC
+perf <- performance(pred, "tpr", "fpr")
+perf_df <- data.frame(
+  False_Positive_Rate = perf@x.values[[1]],
+  True_Positive_Rate = perf@y.values[[1]]
+)
+
+
+# Calculate AUC
+auc <- performance(pred, "auc")
+auc_value <- auc@y.values[[1]]
+
+print(auc_value)
+```
+
+
+```{r}
+# Create ROC curve using ggplot2
+ggplot(perf_df, aes(x = False_Positive_Rate, y = True_Positive_Rate)) +
+  geom_line(color = "#3498db", size = 1.5) +  # Change to a brighter blue
+  geom_abline(linetype = "dashed", color = "#bdc3c7", size = 1) +  # Softer gray for the diagonal
+  geom_area(aes(y = True_Positive_Rate), fill = "#ecf0f1", alpha = 0.5) +  # Add area under curve
+  geom_point(aes(x = False_Positive_Rate, y = True_Positive_Rate), 
+             color = "#e74c3c", size = 2) +  # Add points
+  labs(title = "ROC Curve", 
+       subtitle = sprintf("Area Under Curve (AUC) = %.4f", auc_value),
+       x = "False Positive Rate", y = "True Positive Rate") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 16, face = "bold", color = "#34495e"),
+    plot.subtitle = element_text(size = 14, face = "italic", color = "#34495e"),
+    axis.title = element_text(size = 14, color = "#34495e"),
+    axis.text = element_text(size = 12, color = "#34495e"),
+    legend.position = "bottom",
+    legend.title = element_blank()
+  )
+```
+
+
